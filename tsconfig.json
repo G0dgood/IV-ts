@@ -1,0 +1,21 @@
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "jsx": "react",
+    "strict": true
+  },
+  "expo": {
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "custom photos permission",
+          "cameraPermission": "Allow $(PRODUCT_NAME) to open the camera",
+
+          "//": "Disables the microphone permission",
+          "microphonePermission": false
+        }
+      ]
+    ]
+  }
+}
