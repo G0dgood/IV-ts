@@ -56,7 +56,7 @@ const Login = () => {
       .then(async parsedRes => {
         setisLoading(false)
         setsuccess(true)
-        console.log('parsedRes', parsedRes);
+        // console.log('parsedRes', parsedRes);
         if (parsedRes.idToken) {
           await AsyncStorage.setItem('user', JSON.stringify(parsedRes));
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)
@@ -89,29 +89,7 @@ const Login = () => {
     }
   };
 
-  function validateEmail(email: any) {
-    let error;
-    if (!email) {
-      error = 'Required';
-    } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(email)) {
-      error = 'Invalid email address';
-    }
-    return error;
-  }
 
-  const k: any = (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i)
-
-  const loginValidationSchema = yup.object().shape({
-    // email: yup
-    //   .string()
-    //   .email("Please enter valid email")
-    //   .matches(k)
-    //   .required('Email Address is Required'),
-    // password: yup
-    //   .string()
-    //   .min(8, ({ min }) => `Password must be at least ${min} characters`)
-    //   .required('Password is required'),
-  })
 
   return (
     <KeyboardAvoidingView
@@ -134,64 +112,48 @@ const Login = () => {
         <Text style={styles.logintext1}>Account Login</Text>
         <Text style={styles.logintext2}>Login using correct credentials</Text>
 
-        <Formik
-          validationSchema={loginValidationSchema}
-          initialValues={{
-            password: ''
-          }}
-          onSubmit={loginHandler} >
-          {({ handleChange, handleSubmit, errors, values, touched,
-          }) => (
-            <View>
-              <TextInput
-                placeholder="Agent ID"
-                placeholderTextColor="#20549D"
-                style={styles.logininput}
-                value={email}
-                // onChangeText={handleChange('email')}
-                onChangeText={(text) => setEmail(text)}
-              />
-              {/* {(errors.email || touched.email) &&
-        <Text style={styles.errorText}>{errors.email}</Text>
-       } */}
-              <TextInput
-                // onPress={() => togglePasswordVisiblity()}
-                secureTextEntry={passwordShown}
-                placeholder="Password"
-                placeholderTextColor="#20549D"
-                style={styles.logininput2}
-                value={password}
-                // onChangeText={handleChange('password')}
-                onChangeText={(text) => setPassword(text)}
-              />
-              {(errors.password || touched.password) &&
-                <Text style={styles.errorText}>{errors.password}</Text>
-              }
-              <Ionicons
-                name={icons}
-                size={20}
-                style={styles.eyeOutline}
-                onPress={() => togglePasswordVisiblity()}
-                color={"#BEC3D5"}
-              />
-              {/* @ts-ignore */}
-              <TouchableOpacity style={styles.button} onPress={handleSubmit} >
-                <Text style={styles.text}>
-                  {isLoading ? (
-                    <MaterialIndicator color='white' size={30} />
-                  ) : (
-                    "LOGIN"
-                  )}
-                </Text>
-              </TouchableOpacity>
-            </View>
-          )}
-        </Formik>
-        {/* <Text
-          style={styles.text3}
-          onPress={() => navigation.navigate("PasswordReset")}>
-          Forgot Password?
-        </Text> */}
+
+        <View>
+          <TextInput
+            placeholder="Agent ID"
+            placeholderTextColor="#20549D"
+            style={styles.logininput}
+            value={email}
+            onChangeText={(text) => setEmail(text)}
+          />
+
+          <View>
+            <TextInput
+              // onPress={() => togglePasswordVisiblity()}
+              secureTextEntry={passwordShown}
+              placeholder="Password"
+              placeholderTextColor="#20549D"
+              style={styles.logininput2}
+              value={password}
+              onChangeText={(text) => setPassword(text)}
+            />
+            <Ionicons
+              name={icons}
+              size={20}
+              style={styles.eyeOutline}
+              onPress={() => togglePasswordVisiblity()}
+              color={"#BEC3D5"}
+            />
+
+          </View>
+          {/* @ts-ignore */}
+          <TouchableOpacity style={styles.button} onPress={loginHandler} >
+            <Text style={styles.text}>
+              {isLoading ? (
+                <MaterialIndicator color='white' size={30} />
+              ) : (
+                "LOGIN"
+              )}
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+
       </View>
     </KeyboardAvoidingView>
   );
@@ -207,7 +169,7 @@ const styles = StyleSheet.create({
   eyeOutline: {
     position: "absolute",
     right: 60,
-    bottom: 90,
+    bottom: 14,
   },
 
   container1: {

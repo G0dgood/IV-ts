@@ -5,9 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
  
 
-const initialState = {
-   
-
+const initialState = { 
   user:   null,
   isError: false,
   isSuccess: false,

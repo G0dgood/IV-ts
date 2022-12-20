@@ -5,14 +5,15 @@ import {
   TouchableOpacity,
   Alert,
   RefreshControl,
+  Platform,
 } from "react-native";
 import moment from "moment";
 import { Text, View } from "../components/Themed";
 import { useNavigation } from "@react-navigation/native";
 import { Badge } from "react-native-elements";
 import BannerSlider from "./BannerSlider";
-import { useAppSelector, useAppDispatch } from "../../iverify/hooks/useStore";
-import { MaterialIcons, AntDesign, Entypo, Ionicons } from "@expo/vector-icons";
+import { useAppSelector, useAppDispatch } from "../hooks/useStore";
+import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { allassignedrequest, reset } from "../features/verifySlice";
 import * as Haptics from "expo-haptics";
@@ -21,7 +22,7 @@ import { logoutUser } from "../features/authSlice";
 import { setUserInfo } from "../features/authSlice";
 import { Card } from "../components/TaskCard";
 
-const wait = (timeout) => {
+const wait = (timeout: number | undefined) => {
   return new Promise((resolve) => setTimeout(resolve, timeout));
 };
 const Home = () => {
@@ -49,7 +50,7 @@ const Home = () => {
   const userInfo = async () => {
     try {
       const info = await AsyncStorage.getItem("user");
-
+      // @ts-ignore
       dispatch(setUserInfo(JSON.parse(info)));
     } catch (e) {
       console.log(`isLoggedIn in error ${e}`);
@@ -76,8 +77,8 @@ const Home = () => {
       }
     }
   }, [datav]);
-
-  const data = datas?.data?.filter((obj) => {
+  // @ts-ignore
+  const data = datas?.data?.filter((obj: { service: { category: string; }; }) => {
     return obj?.service?.category !== "CERTIFICATE";
   });
 
@@ -120,27 +121,27 @@ const Home = () => {
   // console.log("user", user);
 
   // // @ts-ignore
-  const COMPLETED = data?.filter((obj) => {
+  const COMPLETED = data?.filter((obj: { status: string; }) => {
     return obj?.status === "COMPLETED";
   });
   // // @ts-ignore
-  const ONGOING = data?.filter((obj) => {
+  const ONGOING = data?.filter((obj: { status: string; }) => {
     return obj?.status === "ONGOING_VERIFICATION";
   });
   // // @ts-ignore
-  const CANCELLED = data?.filter((obj) => {
+  const CANCELLED = data?.filter((obj: { status: string; }) => {
     return obj?.status === "CANCELLED";
   });
   // // @ts-ignore
-  const REJECTED = data?.filter((obj) => {
+  const REJECTED = data?.filter((obj: { status: string; }) => {
     return obj?.status === "REJECTED";
   });
   // // @ts-ignore
-  const pending = data?.filter((obj) => {
+  const pending = data?.filter((obj: { status: string; }) => {
     return obj?.status !== "COMPLETED";
   });
 
-  const Schedule = data?.filter((obj) => {
+  const Schedule = data?.filter((obj: { status: string; }) => {
     return obj?.status !== "COMPLETED";
   });
   // console.log("pending", pending?.length);
@@ -158,6 +159,7 @@ const Home = () => {
       <View style={styles.mainScroll}>
         <View>
           <Text style={styles.morning}>{greet}</Text>
+          {/* @ts-ignore */}
           <Text style={styles.UserName}>{user?.displayName}</Text>
         </View>
 
@@ -216,12 +218,13 @@ const Home = () => {
                 </View>
               </View>
             ) : (
-              data?.map((item, index) => {
+              data?.map((item: { payment: { requestId: any; }; id: any; service: { description: any; category: any; }; }, index: React.Key | null | undefined) => {
                 return (
                   // @ts-ignore
                   <TouchableOpacity
                     key={index}
                     onPress={() =>
+                      // @ts-ignore
                       navigation.navigate("DetailsPage", {
                         Id: item?.payment?.requestId,
                         requestId: item?.id,
@@ -325,7 +328,6 @@ const styles = StyleSheet.create({
 
   mainContainer: {
     flex: 1,
-    // backgroundColor: "#fff",
     paddingTop: Platform.OS === "android" ? 35 : 10,
   },
 

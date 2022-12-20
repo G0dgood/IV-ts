@@ -13,6 +13,8 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { AntDesign } from '@expo/vector-icons';
 import * as Location from 'expo-location';
 import ImageUpload from '../components/ImageUpload';
+import { Formik } from 'formik';
+import * as Yup from 'yup'
 
 
 
@@ -31,26 +33,9 @@ const ReportStatus = ({ navigation }: any) => {
   const [errorMsg, setErrorMsg] = useState<any>(null);
   const [photo, setPhoto] = React.useState<any>(false);
 
-  useEffect(() => {
-    (async () => {
 
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        setErrorMsg('Permission to access location was denied');
-        return;
-      }
 
-      const location: any = await Location.getCurrentPositionAsync({});
-      const address: any = await Location.reverseGeocodeAsync(location.coords)
-      setLocation(location);
-      setAddresscoords({
-        'street': address[0]?.street,
-        'city': address[0]?.city,
-        'region': address[0]?.region,
-        'country': address[0]?.country
-      })
-    })();
-  }, [requestId]);
+
 
   let a = 'W ';
   let text = 'Waiting..';
@@ -123,6 +108,10 @@ const ReportStatus = ({ navigation }: any) => {
   const [companyAddresscomment, setcompanyAddresscomment] = useState<string>('')
   const [landlordInfo, setlandlordInfo] = useState<string>('')
   const [landlordInfocomment, setlandlordInfocomment] = useState<string>('')
+  const [longitude, setlongitude] = useState<string>('')
+  const [latitude, setlatitude] = useState<string>('')
+
+
 
   //  GPS Location
   const [gpslocation, setGPSLocation] = useState<string>('')
@@ -135,6 +124,30 @@ const ReportStatus = ({ navigation }: any) => {
   const [date, setDate] = useState(new Date(Date.now()));
   const [searchDate, setsearchDate] = useState('')
   const [view, setView] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        setErrorMsg('Permission to access location was denied');
+        return;
+      }
+
+      const location: any = await Location.getCurrentPositionAsync({});
+      const address: any = await Location.reverseGeocodeAsync(location.coords)
+      setLocation(location);
+      // console.log('latitude', location?.coords?.latitude, 'longitude', location?.coords?.longitude)
+      setlongitude(location?.coords?.longitude)
+      setlatitude(location?.coords?.latitude)
+      setAddresscoords({
+        'street': address[0]?.street,
+        'city': address[0]?.city,
+        'region': address[0]?.region,
+        'country': address[0]?.country
+      })
+    })();
+  }, [requestId]);
 
   const showPicker = () => {
     setIsPickerShow(true);
@@ -163,219 +176,256 @@ const ReportStatus = ({ navigation }: any) => {
   }
 
 
+  // formik validation
+  const validate = Yup.object().shape({
+
+    client: Yup.string().min(5, 'Too Short!').required("Client is required").nullable(),
+    clientscomment: Yup.string().min(5, 'Too Short!').required("Clients comment is required").nullable(),
+    // designation: Yup.string().min(5, 'Too Short!').required("Designation is required").nullable(),
+    // designationcomment: Yup.string().min(5, 'Too Short!').required("Designation Comment is required").nullable(),
+    // searchDate: Yup.string().min(5, 'Too Short!').required("Search date is required").nullable(),
+    searchDatecomment: Yup.string().min(5, 'Too Short!').required("Search date comment is required").nullable(),
+    fullName: Yup.string().min(5, 'Too Short!').required("FullName is required").nullable(),
+    fullNamecomment: Yup.string().min(5, 'Too Short!').required("FullName comment is required").nullable(),
+
+    residentialAddress: Yup.string().min(5, 'Too Short!').required("Residential address is required").nullable(),
+    residentialAddresscomment: Yup.string().min(5, 'Too Short!').required("Residential address comment is required").nullable(),
+
+    phoneNo: Yup.string().min(5, 'Too Short!').required("phone number is required").nullable(),
+    phoneNocomment: Yup.string().min(5, 'Too Short!').required("Phone number comment is required").nullable(),
+
+    meansOfId: Yup.string().min(5, 'Too Short!').required("Means of Id is required").nullable(),
+    meansOfIdcomment: Yup.string().min(5, 'Too Short!').required("Means of Id comment is required").nullable(),
+    // landlordInfo: Yup.string().min(5, 'Too Short!').required("Land lord Info is required").nullable(),
+    // landlordInfocomment: Yup.string().min(5, 'Too Short!').required("Land lord Info comment is required").nullable(),
+    previousWork: Yup.string().min(5, 'Too Short!').required("Previous Work is required").nullable(),
+    previousWorkcomment: Yup.string().min(5, 'Too Short!').required("Previous Work comment is required").nullable(),
+    observation: Yup.string().min(5, 'Too Short!').required("Observation is required").nullable(),
+    observationcomment: Yup.string().min(5, 'Too Short!').required("Observation comment is required").nullable(),
+    visuals: Yup.string().min(5, 'Too Short!').required("visuals description is required").nullable(),
+    visualsimageUrl: Yup.string().min(5, 'Too Short!').required("visuals Image Url comment is required").nullable(),
+
+  });
 
 
+  const handleSubmitReport = (values: any) => {
 
+    const EMPLOYEE = {
 
-  const value = {
-    "serviceCode": category,
-    "requestId": requestId,
-    "requestItemId": requestItemId,
-    "data": {
-      "client": {
-        "value": client,
-        "comment": clientscomment,
-      },
-      "applicant": {
-        "designation": {
-          "value": designation,
-          "comment": designationcomment,
+      "serviceCode": category,
+      "requestId": requestId,
+      "requestItemId": requestItemId,
+      "data": {
+        "client": {
+          "value": values.client,
+          "comment": values.clientscomment
         },
-        "searchDate": {
-          "value": searchDate,
-          "comment": searchDatecomment,
-        },
-        "fullName": {
-          "value": fullName,
-          "comment": fullNamecomment
-        },
-        "residentialAddress": {
-          "value": residentialAddress,
-          "comment": residentialAddresscomment
-        },
-        "phoneNo": {
-          "value": phoneNo,
-          "comment": phoneNocomment
-        },
-        "meansOfId": {
-          "value": meansOfId,
-          "comment": meansOfIdcomment
-        },
-        "guarantors": [
-          {
-            "fullName": {
-              "value": guarantorsName,
-              "comment": guarantorsNamecomment1,
-            },
-            "address": {
-              "value": guarantorsAddressone,
-              "comment": guarantorsAddresscomment1
+        "applicant": {
+          "designation": {
+            "value": values.designation,
+            "comment": values.designationcomment
+          },
+          "searchDate": {
+            "value": searchDate,
+            "comment": values.searchDatecomment
+          },
+          "fullName": {
+            "value": values.fullName,
+            "comment": values.fullNamecomment
+          },
+          "residentialAddress": {
+            "value": values.residentialAddress,
+            "comment": values.residentialAddresscomment
+          },
+          "phoneNo": {
+            "value": values.phoneNo,
+            "comment": values.phoneNocomment
+          },
+          "meansOfId": {
+            "value": values.meansOfId,
+            "comment": values.meansOfIdcomment
+          },
+          "guarantors": [
+            {
+              "fullName": {
+                "value":
+                  guarantorsName,
+                "comment":
+                  guarantorsNamecomment1
+              },
+              "address": {
+                "value": guarantorsAddressone,
+                "comment": guarantorsAddresscomment1
+              }
             }
+          ],
+          "previousWork": {
+            "value": values.previousWork,
+            "comment": values.previousWorkcomment
+          }
+        },
+        "searchReport": {
+          "fullName": {
+            "value": values.fullName,
+            "comment": values.fullNamecomment
+          },
+          "socialMediaName": {
+            "value": socialMediaName,
+            "comment": socialMediaNamecomment
+          },
+          "residentialAddress": {
+            "value": residentialAddress,
+            "comment": residentialAddresscomment
+          },
+          "employmentReport": {
+            "value": employmentReport,
+            "comment": employmentReportcomment
+          },
+          "guarantors": [
+            {
+              "fullName": {
+                "value":
+                  guarantors1,
+                "comment":
+                  guarantors1comment
+              },
+              "address": {
+                "value": address,
+                "comment": addresscomment
+              }
+            }
+          ]
+        },
+        "observation": {
+          "value": values.observation,
+          "comment": values.observationcomment
+        },
+        "visuals": [
+          {
+            "description": values.visuals,
+            "imageUrl": values.visualsimageUrl
           }
         ],
-        "previousWork": {
-          "value": previousWork,
-          "comment": previousWorkcomment
+        "geolocation": {
+          "longitude": longitude,
+          "latitude": latitude
         }
-      },
-      "searchReport": {
-        "fullName": {
-          "value": searchReport,
-          "comment": searchReportcomment,
-        },
-        "socialMediaName": {
-          "value": socialMediaName,
-          "comment": socialMediaNamecomment,
-        },
-        "residentialAddress": {
-          "value": residentialAddress,
-          "comment": residentialAddresscomment,
-        },
-        "employmentReport": {
-          "value": employmentReport,
-          "comment": employmentReportcomment,
-        },
-        "guarantors": [
-          {
-            "fullName": {
-              "value": guarantors1,
-              "comment": guarantors1comment,
-            },
-            "address": {
-              "value": address,
-              "comment": addresscomment,
-            }
-          }
-        ]
-      },
-      "observation": {
-        "value": observation,
-        "comment": observationcomment,
-      },
-      "visuals": [
-        {
-          "description": visuals,
-          "imageUrl": visualsimageUrl,
-        }
-      ]
+
+      }
+
     }
-  }
 
-
-  const TENANT = {
-    "serviceCode": category,
-    "requestId": requestId,
-    "requestItemId": requestItemId,
-    "data": {
-      "client": {
-        "value": client,
-        "comment": clientscomment,
-      },
-      "applicant": {
-        "searchDate": {
-          "value": searchDate,
-          "comment": searchDatecomment,
+    const TENANT = {
+      "serviceCode": category,
+      "requestId": requestId,
+      "requestItemId": requestItemId,
+      "data": {
+        "client": {
+          "value": values.client,
+          "comment": values.clientscomment
         },
-        "fullName": {
-          "value": fullName,
-          "comment": fullNamecomment
-        },
-        "residentialAddress": {
-          "value": residentialAddress,
-          "comment": residentialAddresscomment
-        },
-        "companyName": {
-          "value": companyName,
-          "comment": companyNamecomment
-        },
-        "companyAddress": {
-          "value": companyAddress,
-          "comment": companyAddresscomment
-        },
-        "phoneNo": {
-          "value": phoneNo,
-          "comment": phoneNocomment
-        },
-        "spouseName": {
-          "value": spouseName,
-          "comment": spouseNamecomment
-        },
-        "email": {
-          "value": email,
-          "comment": emailcomment
-        },
-        "meansOfId": {
-          "value": meansOfId,
-          "comment": meansOfIdcomment
-        },
-        "landlordInfo": {
-          "value": landlordInfo,
-          "comment": landlordInfocomment
-        },
-        "guarantors": [
-          {
-            "fullName": {
-              "value": guarantors1,
-              "comment": guarantors1comment,
-            },
-            "address": {
-              "value": address,
-              "comment": addresscomment,
+        "applicant": {
+          "searchDate": {
+            "value": searchDate,
+            "comment": values.searchDatecomment
+          },
+          "fullName": {
+            "value": values.fullName,
+            "comment": values.fullNamecomment
+          },
+          "residentialAddress": {
+            "value": values.residentialAddress,
+            "comment": values.residentialAddresscomment
+          },
+          "companyName": {
+            "value": companyName,
+            "comment": companyNamecomment
+          },
+          "companyAddress": {
+            "value": companyAddress,
+            "comment": companyAddresscomment
+          },
+          "phoneNo": {
+            "value": values.phoneNo,
+            "comment": values.phoneNocomment
+          },
+          "spouseName": {
+            "value": spouseName,
+            "comment": spouseNamecomment
+          },
+          "email": {
+            "value": email,
+            "comment": emailcomment
+          },
+          "meansOfId": {
+            "value": values.meansOfId,
+            "comment": values.meansOfIdcomment
+          },
+          "landlordInfo": {
+            "value": values.landlordInfo,
+            "comment": values.landlordInfocomment
+          },
+          "guarantors": [
+            {
+              "fullName": {
+                "value": guarantors1,
+                "comment": guarantors1comment
+              },
+              "address": {
+                "value": address,
+                "comment": addresscomment
+              }
             }
+          ]
+        },
+        "searchReport": {
+          "fullName": {
+            "value": values.fullName,
+            "comment": values.fullNamecomment
+          },
+          "socialMediaName": {
+            "value": socialMediaName,
+            "comment": socialMediaNamecomment
+          },
+          "residentialAddress": {
+            "value": values.residentialAddress,
+            "comment": values.residentialAddresscomment
+          },
+          "companyAddress": {
+            "value": companyAddress,
+            "comment": companyAddresscomment
+          },
+          "landlordReview": {
+            "value": values.landlordInfo,
+            "comment": values.landlordInfocomment
+          },
+          "guarantors": [
+            {
+              "fullName": {
+                "value": guarantors1,
+                "comment": guarantors1comment
+              },
+              "address": {
+                "value": address,
+                "comment": addresscomment
+              }
+            }
+          ]
+        },
+        "observation": {
+          "value": values.observation,
+          "comment": values.observationcomment
+        },
+        "visuals": [
+          {
+            "description": values.visuals,
+            "imageUrl": values.visualsimageUrl
           }
         ]
-      },
-      "searchReport": {
-        "fullName": {
-          "value": searchReport,
-          "comment": searchReportcomment,
-        },
-        "socialMediaName": {
-          "value": socialMediaName,
-          "comment": socialMediaNamecomment,
-        },
-        "residentialAddress": {
-          "value": residentialAddress,
-          "comment": residentialAddresscomment
-        },
-        "companyAddress": {
-          "value": companyAddress,
-          "comment": companyAddresscomment
-        },
-        "landlordReview": {
-          "value": landlordInfo,
-          "comment": landlordInfocomment
-        },
-        "guarantors": [
-          {
-            "fullName": {
-              "value": guarantors1,
-              "comment": guarantors1comment,
-            },
-            "address": {
-              "value": guarantorsAddressone,
-              "comment": guarantorsAddresscomment1
-            }
-          }
-        ]
-      },
-      "observation": {
-        "value": observation,
-        "comment": observationcomment,
-      },
-      "visuals": [
-        {
-          "description": visuals,
-          "imageUrl": visualsimageUrl,
-        }
-      ]
+      }
+
     }
-  }
 
-
-
-
-  const handleSubmit = () => {
     const config = {
       headers: {
         "Content-Type": "application/json",
@@ -384,15 +434,15 @@ const ReportStatus = ({ navigation }: any) => {
     };
     setLoading(true);
     axios
-      .post(baseUrl + `/agent/report/create`, category === "EMPLOYEE" ? value : TENANT, config)
+      .post(baseUrl + `/agent/report/create`, category === "EMPLOYEE" ? EMPLOYEE : TENANT, config)
       .then((res: { data: any; }) => {
         navigation.replace('SuccessConfirmed', { name })
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)
-        console.log("Success", res.data);
+        // console.log("Success", res.data);
         setLoading(false);
       })
       .catch((err: { message: any; }) => {
-        console.log('err', err);
+        // console.log('err', err);
         setMessage(err?.message);
         setLoading(false);
         setisError(true);
@@ -418,16 +468,13 @@ const ReportStatus = ({ navigation }: any) => {
         setdesignation('')
         setsearchDate('')
         setfullName(Employee[0]?.fullName)
-        setresidentialAddress('')
+        setresidentialAddress(Employee[0]?.residentialAddress)
         setphoneNo(Employee[0]?.phoneNo)
         setmeansOfId(Employee?.identity)
-        // guarantorsNametwo('')
-        setguarantorsAddressone(Employee[0]?.residentialAddress)
+        setguarantorsAddressone('')
         setpreviousWork('')
         setsocialMediaName('')
         setemploymentReport('')
-        // setguarantors1('')
-        // setguarantors2('')
         setvisuals('')
         setobservation('')
       } catch (err) {
@@ -442,13 +489,10 @@ const ReportStatus = ({ navigation }: any) => {
         setresidentialAddress('')
         setphoneNo('')
         setmeansOfId('')
-        // guarantorsNametwo('')
         setguarantorsAddressone('')
         setpreviousWork('')
         setsocialMediaName('')
         setemploymentReport('')
-        // setguarantors1('')
-        // setguarantors2('')
         setvisuals('')
         setobservation('')
       } catch (err) {
@@ -460,16 +504,13 @@ const ReportStatus = ({ navigation }: any) => {
         setdesignation('')
         setsearchDate('')
         setfullName(Tenant[0]?.fullName)
-        setresidentialAddress('')
+        setresidentialAddress(Tenant[0]?.residentialAddress)
         setphoneNo(Tenant[0]?.phoneNo)
         setmeansOfId(Tenant?.identity)
-        // guarantorsName()
-        setguarantorsAddressone(Tenant[0]?.residentialAddress),
+        setguarantorsAddressone(''),
           setpreviousWork('')
         setsocialMediaName('')
         setemploymentReport('')
-        // setguarantors1('')
-        // setguarantors2('')
         setvisuals('')
         setobservation('')
       } catch (err) {
@@ -522,7 +563,7 @@ const ReportStatus = ({ navigation }: any) => {
   const handlePress18 = () => setExpanded18(!expanded18);
 
 
-  // console.log(gpslocation)
+
 
 
   return (
@@ -531,717 +572,543 @@ const ReportStatus = ({ navigation }: any) => {
         <KeyboardAwareScrollView resetScrollToCoords={{ x: 0, y: 0 }} scrollEnabled={false}>
           <Text style={styles.text}>{name}</Text>
 
-
-          {/* <SearchScreen
-            //  @ts-ignore
-            latitude={a?.coords?.latitude}
-            //  @ts-ignore
-            longitude={a?.coords?.longitude}
-          /> */}
-          {/* <Text style={styles.streetstreet} >
-            {':=>'}
-            {addresscoords?.street} {""}
-            {addresscoords?.city} {""}
-            {addresscoords?.region} {""}
-            {addresscoords?.country} */}
-
           {/* @ts-ignore */}
-          {/* {a?.coords?.latitude}   {a?.coords?.longitude} */}
-          {/* </Text> */}
-          <List.Section >
-            <List.Accordion
-              title="GPS Location"
-              expanded={expanded14}
-              onPress={handlePress14}
-            >
-              <View style={styles.inputContainer}>
-                <Text style={styles.textTitle}>
-                  GPS Location
-                </Text>
-                <TextInput
-                  defaultValue={gpslocation === undefined ? "Loading Location..." : gpslocation}
-                  style={styles.input}
-                  placeholder={'GPS Location'}
-                  placeholderTextColor="#1113"
-                  onChangeText={setcompanyName}
-                />
-              </View>
+          <Formik
+            enableReinitialize={true}
+            initialValues={{
+              client: client,
+              clientscomment: '',
+              searchDatecomment: '',
+              fullName: fullName,
+              fullNamecomment: '',
+              residentialAddress: '',
+              residentialAddresscomment: '',
+              phoneNo: phoneNo,
+              phoneNocomment: '',
+              meansOfId: '',
+              meansOfIdcomment: '',
+              previousWork: '',
+              previousWorkcomment: '',
+              // landlordInfo: '',
+              // landlordInfocomment: '',
+              observation: '',
+              observationcomment: '',
+              visuals: '',
+              visualsimageUrl: visualsimageUrl,
 
-            </List.Accordion>
-            {/* client  */}
-            <List.Accordion
-              title="Client"
-              expanded={expanded}
-              onPress={handlePress}>
-              <View style={styles.inputContainer}>
-                <Text style={styles.textTitle}>
-                  Clients Name
-                </Text>
-                <TextInput
-                  value={client}
-                  style={styles.input}
-                  placeholder={'client comment'}
-                  placeholderTextColor="#1113"
-                  onChangeText={setclient}
-                />
-              </View>
-              <View style={styles.inputContainer}>
-                <Text style={styles.textTitle}>
-                  Comment
-                </Text>
-                <TextInput
-                  numberOfLines={1}
-                  value={clientscomment}
-                  onChangeText={setclientscomment}
-                  style={styles.input}
-                  placeholder={'client comment'}
-                  placeholderTextColor="#1113"
-                />
-              </View>
-            </List.Accordion>
+            }}
+            validationSchema={validate}
+            onSubmit={handleSubmitReport}
+          >
 
-            {/* Designation  */}
-            {/* <List.Accordion
-              title="Designation"
-              expanded={expanded1}
-              onPress={handlePress1}>
-              <View style={styles.inputContainer}>
-                <Text style={styles.textTitle}>
-                  Designation
-                </Text>
-                <TextInput
-                  value={designation}
-                  style={styles.input}
-                  placeholder={'Designation'}
-                  placeholderTextColor="#1113"
-                  onChangeText={setdesignation}
-                />
-              </View>
-              <View style={styles.inputContainer}>
-                <Text style={styles.textTitle}>
-                  Comment
-                </Text>
-                <TextInput
-                  value={designationcomment}
-                  style={styles.input}
-                  placeholder={'Designation Comment'}
-                  placeholderTextColor="#1113"
-                  onChangeText={setdesignationcomment}
-                />
-              </View>
-            </List.Accordion> */}
+            {({ values, errors, touched, handleChange, setFieldTouched, isValid, handleSubmit }): any => (
+              <View>
+                <List.Section >
+                  {/* <List.Accordion
+                    title="GPS Location"
+                    expanded={expanded14}
+                    onPress={handlePress14}
+                  >
+                    <View style={styles.inputContainer}>
+                      <Text style={styles.textTitle}>
+                        GPS Location
+                      </Text>
+                      <TextInput
+                        defaultValue={gpslocation === undefined ? "Loading Location..." : gpslocation}
+                        style={styles.input}
+                        placeholder={'GPS Location'}
+                        placeholderTextColor="#1113"
 
-            {/* Search Date */}
-            <List.Accordion
-              title="Search Date"
-              expanded={expanded2}
-              onPress={handlePress2}>
-              <View style={styles.inputContainer}>
-                <Text style={styles.textTitle}>
-                  Search Date
-                </Text>
-              </View>
-              {/* The button that used to trigger the date picker */}
-              <View style={styles.signupinputmain}>
-                {/* Display the selected date */}
-                {/* <Text style={styles.KYCClientInputText}>Date of Birth</Text> */}
-                <View style={styles.pickedContainer}>
-                  <View style={styles.pickedDateContainer}>
-                    <Text style={styles.pickedDate}>{date.toLocaleDateString()}</Text>
-                  </View>
+                      />
+                    </View>
 
-                  {/* The button that used to trigger the date picker */}
-                  <View style={styles.btnContainer}>
-                    {!isPickerShow && (
-                      <View lightColor="#eee" darkColor="#fff">
-                        <TouchableOpacity onPress={showPicker} >
-                          <Text>
-                            <AntDesign name="calendar" size={30} color={"#fff"} style={styles.Close} />
-                          </Text>
-                        </TouchableOpacity>
-                      </View>)}
+                  </List.Accordion> */}
+                  {/* client  */}
+                  <List.Accordion
+                    title="Client"
+                    expanded={expanded}
+                    onPress={handlePress}>
+                    <View style={styles.inputContainer}>
+                      <Text style={styles.textTitle}>
+                        Clients Name
+                      </Text>
+                      <TextInput
+                        value={values.client}
+                        style={styles.input}
+                        placeholder={'client comment'}
+                        placeholderTextColor="#1113"
+                        onChangeText={handleChange('client')}
+                      />
+                      {errors.client && <Text style={styles.errors}>{errors.client}</Text>}
+                    </View>
+                    <View style={styles.inputContainer}>
+                      <Text style={styles.textTitle}>
+                        Comment
+                      </Text>
+                      <TextInput
+                        numberOfLines={1}
+                        value={values.clientscomment}
+                        style={styles.input}
+                        placeholder={'client comment'}
+                        placeholderTextColor="#1113"
+                        onChangeText={handleChange('clientscomment')}
+                      />
+                      {errors.clientscomment && <Text style={styles.errors}>{errors.clientscomment}</Text>}
+                    </View>
+                  </List.Accordion>
 
-                    {isPickerShow &&
-                      <View lightColor="#eee" darkColor="#fff">
-                        <TouchableOpacity onPress={handleView} style={styles.ContainerClose} >
-                          <Text style={styles.Close} >Close</Text>
-                        </TouchableOpacity>
-                      </View>}
-                  </View>
-                </View>
+                  {/* Search Date */}
+                  <List.Accordion
+                    title="Search Date"
+                    expanded={expanded2}
+                    onPress={handlePress2}>
+                    <View style={styles.inputContainer}>
+                      <Text style={styles.textTitle}>
+                        Search Date
+                      </Text>
+                    </View>
+                    {/* The button that used to trigger the date picker */}
+                    <View style={styles.signupinputmain}>
+                      {/* Display the selected date */}
+                      {/* <Text style={styles.KYCClientInputText}>Date of Birth</Text> */}
+                      <View style={styles.pickedContainer}>
+                        <View style={styles.pickedDateContainer}>
+                          <Text style={styles.pickedDate}>{date.toLocaleDateString()}</Text>
+                        </View>
 
-                {/* The date picker */}
-                {isPickerShow && (
-                  <DateTimePicker
-                    value={date}
-                    mode={'date'}
-                    display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-                    is24Hour={true}
-                    onChange={onChange}
-                    style={styles.datePicker}
-                  />
-                )}
-              </View>
+                        {/* The button that used to trigger the date picker */}
+                        <View style={styles.btnContainer}>
+                          {!isPickerShow && (
+                            <View lightColor="#eee" darkColor="#fff">
+                              <TouchableOpacity onPress={showPicker} >
+                                <Text>
+                                  <AntDesign name="calendar" size={30} color={"#fff"} style={styles.Close} />
+                                </Text>
+                              </TouchableOpacity>
+                            </View>)}
 
-              <View style={styles.inputContainer}>
-                <Text style={styles.textTitle}>
-                  Comment
-                </Text>
-                <TextInput
-                  value={searchDatecomment}
-                  style={styles.input}
-                  numberOfLines={5}
-                  placeholder={'Search Comment'}
-                  placeholderTextColor="#1113"
-                  onChangeText={setsearchDatecomment}
-                />
-              </View>
-            </List.Accordion>
+                          {isPickerShow &&
+                            <View lightColor="#eee" darkColor="#fff">
+                              <TouchableOpacity onPress={handleView} style={styles.ContainerClose} >
+                                <Text style={styles.Close} >Close</Text>
+                              </TouchableOpacity>
+                            </View>}
+                        </View>
+                      </View>
 
+                      {/* The date picker */}
+                      {isPickerShow && (
+                        <DateTimePicker
+                          value={date}
+                          mode={'date'}
+                          display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                          is24Hour={true}
+                          onChange={onChange}
+                          style={styles.datePicker}
+                        />
+                      )}
 
-            {/* fullName */}
-            <List.Accordion
-              title="FullName"
-              expanded={expanded3}
-              onPress={handlePress3}>
+                    </View>
 
-              <View style={styles.inputContainer}>
-                <Text style={styles.textTitle}>
-                  Full Name
-                </Text>
-                <TextInput
-                  value={fullName}
-                  style={styles.input}
-                  numberOfLines={1}
-                  placeholder={'fullName'}
-                  placeholderTextColor="#1113"
-                  onChangeText={setfullName}
-                />
-              </View>
-              <View style={styles.inputContainer}>
-                <Text style={styles.textTitle}>
-                  Comment
-                </Text>
-                <TextInput
-                  value={fullNamecomment}
-                  style={styles.input}
-                  numberOfLines={5}
-                  placeholder={'FullName Comment'}
-                  placeholderTextColor="#1113"
-                  onChangeText={setfullNamecomment}
-                />
-              </View>
-            </List.Accordion>
-
-            <List.Accordion
-              title="Residential Address"
-              expanded={expanded4}
-              onPress={handlePress4}
-            >
-              <View style={styles.inputContainer}>
-                <Text style={styles.textTitle}>
-                  Residential Address
-                </Text>
-                <TextInput
-                  value={residentialAddress}
-                  style={styles.input}
-                  placeholder={'residentialAddress'}
-                  placeholderTextColor="#1113"
-                  onChangeText={setresidentialAddress}
-                />
-              </View>
-              <View style={styles.inputContainer}>
-                <Text style={styles.textTitle}>
-                  Comment
-                </Text>
-                <TextInput
-                  numberOfLines={5}
-                  value={residentialAddresscomment}
-                  style={styles.input}
-                  placeholder={'Residential Comment'}
-                  placeholderTextColor="#1113"
-                  onChangeText={setresidentialAddresscomment}
-                />
-              </View>
-
-            </List.Accordion>
-
-            {/* <List.Accordion
-              title="Company Name"
-              expanded={expanded14}
-              onPress={handlePress14}
-            >
-              <View style={styles.inputContainer}>
-                <Text style={styles.textTitle}>
-                  Company Name
-                </Text>
-                <TextInput
-                  value={companyName}
-                  style={styles.input}
-                  placeholder={'Company Name'}
-                  placeholderTextColor="#1113"
-                  onChangeText={setcompanyName}
-                />
-              </View>
-              <View style={styles.inputContainer}>
-                <Text style={styles.textTitle}>
-                  Comment
-                </Text>
-                <TextInput
-                  value={companyNamecomment}
-                  style={styles.input}
-                  placeholder={'Company Name Comment'}
-                  placeholderTextColor="#1113"
-                  onChangeText={setcompanyNamecomment}
-                />
-              </View>
-
-            </List.Accordion> */}
-            <List.Accordion
-              title="Company Address"
-              expanded={expanded17}
-              onPress={handlePress17}
-            >
-              <View style={styles.inputContainer}>
-                <Text style={styles.textTitle}>
-                  Company Address
-                </Text>
-                <TextInput
-                  value={companyAddress}
-                  style={styles.input}
-                  placeholder={'Company Address'}
-                  placeholderTextColor="#1113"
-                  onChangeText={setcompanyAddress}
-                />
-              </View>
-              <View style={styles.inputContainer}>
-                <Text style={styles.textTitle}>
-                  Comment
-                </Text>
-                <TextInput
-                  numberOfLines={5}
-                  value={companyAddresscomment}
-                  style={styles.input}
-                  placeholder={'Company Address Commnet'}
-                  placeholderTextColor="#1113"
-                  onChangeText={setcompanyAddresscomment}
-                />
-              </View>
-
-            </List.Accordion>
-
-            {/* Phone Number */}
-            <List.Accordion
-              title="Phone Number"
-              expanded={expanded5}
-              onPress={handlePress5}>
-
-              <View style={styles.inputContainer}>
-                <Text style={styles.textTitle}>
-                  Phone Number
-                </Text>
-                <TextInput
-                  value={phoneNo}
-                  style={styles.input}
-                  placeholder={'phone Number'}
-                  placeholderTextColor="#1113"
-                  onChangeText={setphoneNo}
-                />
-              </View>
-              <View style={styles.inputContainer}>
-                <Text style={styles.textTitle}>
-                  Comment
-                </Text>
-                <TextInput
-                  numberOfLines={5}
-                  value={phoneNocomment}
-                  style={styles.input}
-                  placeholder={'Phone Number Comment'}
-                  placeholderTextColor="#1113"
-                  onChangeText={setphoneNocomment}
-                />
-              </View>
-
-            </List.Accordion>
-            {/* Spouse Name */}
-            {/* <List.Accordion
-              title="Spouse Name"
-              expanded={expanded15}
-              onPress={handlePress15}>
-
-              <View style={styles.inputContainer}>
-                <Text style={styles.textTitle}>
-                  Spouse Name
-                </Text>
-                <TextInput
-                  value={spouseName}
-                  style={styles.input}
-                  placeholder={' Spouse Name'}
-                  placeholderTextColor="#1113"
-                  onChangeText={setspouseName}
-                />
-              </View>
-              <View style={styles.inputContainer}>
-                <Text style={styles.textTitle}>
-                  Comment
-                </Text>
-                <TextInput
-                  value={spouseNamecomment}
-                  style={styles.input}
-                  placeholder={'Spouse Name Comment'}
-                  placeholderTextColor="#1113"
-                  onChangeText={setspouseNamecomment}
-                />
-              </View>
-
-            </List.Accordion> */}
-            {/* email */}
-            {/* <List.Accordion
-              title="email"
-              expanded={expanded16}
-              onPress={handlePress16}>
-
-              <View style={styles.inputContainer}>
-                <Text style={styles.textTitle}>
-                  email
-                </Text>
-                <TextInput
-                  value={email}
-                  style={styles.input}
-                  placeholder={' email'}
-                  placeholderTextColor="#1113"
-                  onChangeText={setemail}
-                />
-              </View>
-              <View style={styles.inputContainer}>
-                <Text style={styles.textTitle}>
-                  Comment
-                </Text>
-                <TextInput
-                  value={emailcomment}
-                  style={styles.input}
-                  placeholder={'email Comment'}
-                  placeholderTextColor="#1113"
-                  onChangeText={setemailcomment}
-                />
-              </View>
-
-            </List.Accordion> */}
-
-            {/* Mean so fId */}
-            <List.Accordion
-              title="Means Of Identification"
-              expanded={expanded6}
-              onPress={handlePress6}>
-              <View style={styles.inputContainer}>
-                <Text style={styles.textTitle}>
-                  Means Of Identification
-                </Text>
-                <TextInput
-                  value={meansOfId}
-                  style={styles.input}
-                  // numberOfLines={1}
-                  placeholder={'Means Of Identification'}
-                  placeholderTextColor="#1113"
-                  onChangeText={setmeansOfId}
-                />
-              </View>
-              <View style={styles.inputContainer}>
-                <Text style={styles.textTitle}>
-                  Comment
-                </Text>
-                <TextInput
-                  numberOfLines={5}
-                  value={meansOfIdcomment}
-                  style={styles.input}
-                  placeholder={'Means Of Identification Comment'}
-                  placeholderTextColor="#1113"
-                  onChangeText={setmeansOfIdcomment}
-                />
-              </View>
-            </List.Accordion>
-
-            {/* Land Lord Info*/}
-            {name === "Tenant Verification" && <List.Accordion
-              title="Land Lord Info"
-              expanded={expanded6}
-              onPress={handlePress6}>
-              <View style={styles.inputContainer}>
-                <Text style={styles.textTitle}>
-                  Land Lord Info
-                </Text>
-                <TextInput
-                  value={landlordInfo}
-                  style={styles.input}
-                  // numberOfLines={1}
-                  placeholder={'Land Lord Info'}
-                  placeholderTextColor="#1113"
-                  onChangeText={setlandlordInfo}
-                />
-              </View>
-              <View style={styles.inputContainer}>
-                <Text style={styles.textTitle}>
-                  Comment
-                </Text>
-                <TextInput
-                  numberOfLines={5}
-                  value={landlordInfocomment}
-                  style={styles.input}
-                  placeholder={'Land Lord Info Comment'}
-                  placeholderTextColor="#1113"
-                  onChangeText={setlandlordInfocomment}
-                />
-              </View>
-            </List.Accordion>}
+                    <View style={styles.inputContainer}>
+                      <Text style={styles.textTitle}>
+                        Comment
+                      </Text>
+                      <TextInput
+                        value={values.searchDatecomment}
+                        style={styles.input}
+                        numberOfLines={5}
+                        placeholder={'Search Comment'}
+                        placeholderTextColor="#1113"
+                        onChangeText={handleChange('searchDatecomment')}
+                      />
+                      {errors.searchDatecomment && <Text style={styles.errors}>{errors.searchDatecomment}</Text>}
+                    </View>
+                  </List.Accordion>
 
 
-            {/* Guarantors Name */}
-            {/* <List.Accordion
-              title="Guarantors Name"
-              expanded={expanded7}
-              onPress={handlePress7}>
-              <View style={styles.inputContainer}>
-                <Text style={styles.textTitle}>
-                  Guarantors Name
-                </Text>
-                <TextInput
-                  value={guarantorsName}
-                  style={styles.input}
-                  placeholder={'Guarantors Name'}
-                  placeholderTextColor="#1113"
-                  onChangeText={setguarantorsName}
-                />
-              </View>
-              <View style={styles.inputContainer}>
-                <Text style={styles.textTitle}>
-                  Comment
-                </Text>
-                <TextInput
-                  value={guarantorsNamecomment1}
-                  style={styles.input}
-                  placeholder={'Guarantors Name'}
-                  placeholderTextColor="#1113"
-                  onChangeText={setguarantorsNamebcomment1}
-                />
-              </View>
+                  {/* fullName */}
+                  <List.Accordion
+                    title="FullName"
+                    expanded={expanded3}
+                    onPress={handlePress3}>
 
-            </List.Accordion> */}
+                    <View style={styles.inputContainer}>
+                      <Text style={styles.textTitle}>
+                        Full Name
+                      </Text>
+                      <TextInput
+                        value={values.fullName}
+                        style={styles.input}
+                        numberOfLines={1}
+                        placeholder={'fullName'}
+                        placeholderTextColor="#1113"
+                        onChangeText={handleChange('fullName')}
+                      />
+                      {errors.fullName && <Text style={styles.errors}>{errors.fullName}</Text>}
+                    </View>
+                    <View style={styles.inputContainer}>
+                      <Text style={styles.textTitle}>
+                        Comment
+                      </Text>
+                      <TextInput
+                        value={values.fullNamecomment}
+                        style={styles.input}
+                        numberOfLines={5}
+                        placeholder={'FullName Comment'}
+                        placeholderTextColor="#1113"
+                        onChangeText={handleChange('fullNamecomment')}
+                      />
+                      {errors.fullNamecomment && <Text style={styles.errors}>{errors.fullNamecomment}</Text>}
+                    </View>
+                  </List.Accordion>
 
+                  <List.Accordion
+                    title="Residential Address"
+                    expanded={expanded4}
+                    onPress={handlePress4}
+                  >
+                    <View style={styles.inputContainer}>
+                      <Text style={styles.textTitle}>
+                        Residential Address
+                      </Text>
+                      <TextInput
+                        value={values.residentialAddress}
+                        style={styles.input}
+                        placeholder={'residentialAddress'}
+                        placeholderTextColor="#1113"
+                        onChangeText={handleChange('residentialAddress')}
+                      />
+                      {errors.residentialAddress && <Text style={styles.errors}>{errors.residentialAddress}</Text>}
+                    </View>
+                    <View style={styles.inputContainer}>
+                      <Text style={styles.textTitle}>
+                        Comment
+                      </Text>
+                      <TextInput
+                        numberOfLines={5}
+                        value={values.residentialAddresscomment}
+                        style={styles.input}
+                        placeholder={'Residential Comment'}
+                        placeholderTextColor="#1113"
+                        onChangeText={handleChange('residentialAddresscomment')}
+                      />
+                      {errors.residentialAddresscomment && <Text style={styles.errors}>{errors.residentialAddresscomment}</Text>}
+                    </View>
 
-
-            {/* Guarantors Address */}
-            {/* <List.Accordion
-              title="Guarantors Address"
-              expanded={expanded8}
-              onPress={handlePress8} >
-
-              <View style={styles.inputContainer}>
-                <Text style={styles.textTitle}>
-                  Guarantors Address
-                </Text>
-                <TextInput
-                  value={guarantorsAddressone}
-                  style={styles.input}
-                  placeholder={'Guarantors Address One'}
-                  placeholderTextColor="#1113"
-                  onChangeText={setguarantorsAddressone}
-                />
-              </View>
-              <View style={styles.inputContainer}>
-                <Text style={styles.textTitle}>
-                  Comment
-                </Text>
-                <TextInput
-                  value={guarantorsAddresscomment1}
-                  style={styles.input}
-                  placeholder={'Guarantors Address Comment One'}
-                  placeholderTextColor="#1113"
-                  onChangeText={setguarantorsAddresscomment1}
-                />
-              </View>
-
-            </List.Accordion> */}
-
-            {/* Previous Work */}
-            <List.Accordion
-              title="Previous Work"
-              expanded={expanded9}
-              onPress={handlePress9}>
-              <View style={styles.inputContainer}>
-                <Text style={styles.textTitle}>
-                  Previous Work
-                </Text>
-                <TextInput
-                  value={previousWork}
-                  style={styles.input}
-                  placeholder={'previous Work'}
-                  placeholderTextColor="#1113"
-                  onChangeText={setpreviousWork}
-                />
-              </View>
-              <View style={styles.inputContainer}>
-                <Text style={styles.textTitle}>
-                  Comment
-                </Text>
-                <TextInput
-                  numberOfLines={5}
-                  value={previousWorkcomment}
-                  style={styles.input}
-                  placeholder={'previous Work Comment'}
-                  placeholderTextColor="#1113"
-                  onChangeText={setpreviousWorkcomment}
-                />
-              </View>
-            </List.Accordion>
+                  </List.Accordion>
 
 
-            {/* Social Media Name */}
-            {/* <List.Accordion
-              title="Social Media Name"
-              expanded={expanded10}
-              onPress={handlePress10}>
-              <View style={styles.inputContainer}>
-                <Text style={styles.textTitle}>
-                  Social Media Name
-                </Text>
-                <TextInput
-                  value={socialMediaName}
-                  style={styles.input}
-                  placeholder={'Social Media Name '}
-                  placeholderTextColor="#1113"
-                  onChangeText={setsocialMediaName}
-                />
-              </View>
-              <View style={styles.inputContainer}>
-                <Text style={styles.textTitle}>
-                  Comment
-                </Text>
-                <TextInput
-                  value={socialMediaNamecomment}
-                  style={styles.input}
-                  placeholder={'Social Media Name comment'}
-                  placeholderTextColor="#1113"
-                  onChangeText={setsocialMediaNamecomment}
-                />
-              </View>
-            </List.Accordion> */}
-
-
-            {/* fullName */}
-            <List.Accordion
-              title="Employment Report"
-              expanded={expanded11}
-              onPress={handlePress11}>
-
-              <View style={styles.inputContainer}>
-                <Text style={styles.textTitle}>
-                  Employment Report
-                </Text>
-                <TextInput
-                  value={employmentReport}
-                  style={styles.input}
-                  numberOfLines={1}
-                  placeholder={'Employment Report  '}
-                  placeholderTextColor="#1113"
-                  onChangeText={setemploymentReport}
-                />
-              </View>
-              <View style={styles.inputContainer}>
-                <Text style={styles.textTitle}>
-                  Comment
-                </Text>
-                <TextInput
-                  value={employmentReportcomment}
-                  style={styles.input}
-                  numberOfLines={5}
-                  placeholder={'Employment Report comment'}
-                  placeholderTextColor="#1113"
-                  onChangeText={setemploymentReportcomment}
-                />
-              </View>
-            </List.Accordion>
-
-
-            <List.Accordion
-              title="Observation"
-              expanded={expanded12}
-              onPress={handlePress12}>
-              <View style={styles.inputContainer}>
-                <Text style={styles.textTitle}>
-                  Observation
-                </Text>
-                <TextInput
-                  value={observation}
-                  style={styles.input}
-                  placeholder={'Observation'}
-                  placeholderTextColor="#1113"
-                  onChangeText={setobservation}
-                />
-              </View>
-              <View style={styles.inputContainer}>
-                <Text style={styles.textTitle}>
-                  Comment
-                </Text>
-                <TextInput
-                  numberOfLines={5}
-                  value={observationcomment}
-                  style={styles.input}
-                  placeholder={'Observation comment'}
-                  placeholderTextColor="#1113"
-                  onChangeText={setobservationcomment}
-                />
-              </View>
-            </List.Accordion>
-
-            {/* Visuals */}
-            <List.Accordion
-              title="Visuals"
-              expanded={expanded13}
-              onPress={handlePress13}>
-
-              <View style={styles.inputContainer}>
-                <Text style={styles.textTitle}>
-                  Visuals
-                </Text>
-                <TextInput
-                  value={visuals}
-                  style={styles.input}
-                  numberOfLines={1}
-                  placeholder={'visuals'}
-                  placeholderTextColor="#1113"
-                  onChangeText={setvisuals}
-                />
-                <View style={styles.inputContainer}>
-                  <Text style={styles.textTitle}>
-                    Comment
-                  </Text>
-                  <TextInput
-                    numberOfLines={5}
-                    value={visualsimageUrl}
-                    style={styles.input}
-                    placeholder={'Visuals image Url'}
-                    placeholderTextColor="#1113"
-                    onChangeText={setobservationcomment}
-                  />
-                </View>
-              </View>
-              <View style={styles.inputContainer}>
-                <Text style={styles.textTitle}>
-                  Visuals Image Url
-                </Text>
-                <ImageUpload setPhoto={setPhoto} setvisualsimageUrl={setvisualsimageUrl} />
-              </View>
-
-            </List.Accordion>
-
-
-          </List.Section>
-          <View style={styles.Submit}>
-            <TouchableOpacity style={photo ? styles.buttonContainer1 : styles.buttonContainer} onPress={handleSubmit}>
-              {Loading ? <MaterialIndicator color='white' size={25} style={styles.loadingIcon} /> : <Text style={styles.buttonText}>Submit</Text>}
-
-            </TouchableOpacity>
+                  {/* <List.Accordion
+          title="Company Address"
+          expanded={expanded17}
+          onPress={handlePress17}
+         >
+          <View style={styles.inputContainer}>
+           <Text style={styles.textTitle}>
+            Company Address
+           </Text>
+           <TextInput
+            value={companyAddress}
+            style={styles.input}
+            placeholder={'Company Address'}
+            placeholderTextColor="#1113"
+            onChangeText={setcompanyAddress}
+           />
+           {errors.companyAddress && <Text style={styles.errors}>{errors.companyAddress}</Text>}
           </View>
+          <View style={styles.inputContainer}>
+           <Text style={styles.textTitle}>
+            Comment
+           </Text>
+           <TextInput
+            numberOfLines={5}
+            value={companyAddresscomment}
+            style={styles.input}
+            placeholder={'Company Address Commnet'}
+            placeholderTextColor="#1113"
+            onChangeText={setcompanyAddresscomment}
+           />
+          </View>
+
+         </List.Accordion> */}
+
+                  {/* Phone Number */}
+                  <List.Accordion
+                    title="Phone Number"
+                    expanded={expanded5}
+                    onPress={handlePress5}>
+
+                    <View style={styles.inputContainer}>
+                      <Text style={styles.textTitle}>
+                        Phone Number
+                      </Text>
+                      <TextInput
+                        value={values.phoneNo}
+                        style={styles.input}
+                        placeholder={'phone Number'}
+                        placeholderTextColor="#1113"
+                        onChangeText={handleChange('phoneNo')}
+                      />
+                      {errors.phoneNo && <Text style={styles.errors}>{errors.phoneNo}</Text>}
+                    </View>
+                    <View style={styles.inputContainer}>
+                      <Text style={styles.textTitle}>
+                        Comment
+                      </Text>
+                      <TextInput
+                        numberOfLines={5}
+                        value={values.phoneNocomment}
+                        style={styles.input}
+                        placeholder={'Phone Number Comment'}
+                        placeholderTextColor="#1113"
+                        onChangeText={handleChange('phoneNocomment')}
+                      />
+                      {errors.phoneNocomment && <Text style={styles.errors}>{errors.phoneNocomment}</Text>}
+                    </View>
+
+                  </List.Accordion>
+
+
+                  {/* Mean so fId */}
+                  <List.Accordion
+                    title="Means Of Identification"
+                    expanded={expanded6}
+                    onPress={handlePress6}>
+                    <View style={styles.inputContainer}>
+                      <Text style={styles.textTitle}>
+                        Means Of Identification
+                      </Text>
+                      <TextInput
+                        value={values.meansOfId}
+                        style={styles.input}
+                        // numberOfLines={1}
+                        placeholder={'Means Of Identification'}
+                        placeholderTextColor="#1113"
+                        onChangeText={handleChange('meansOfId')}
+                      />
+                      {errors.meansOfId && <Text style={styles.errors}>{errors.meansOfId}</Text>}
+                    </View>
+                    <View style={styles.inputContainer}>
+                      <Text style={styles.textTitle}>
+                        Comment
+                      </Text>
+                      <TextInput
+                        numberOfLines={5}
+                        value={values.meansOfIdcomment}
+                        style={styles.input}
+                        placeholder={'Means Of Identification Comment'}
+                        placeholderTextColor="#1113"
+                        onChangeText={handleChange('meansOfIdcomment')}
+                      />
+                      {errors.meansOfIdcomment && <Text style={styles.errors}>{errors.meansOfIdcomment}</Text>}
+                    </View>
+                  </List.Accordion>
+
+                  {/* Land Lord Info*/}
+                  {name === "Tenant Verification" &&
+                    <List.Accordion
+                      title="Land Lord Info"
+                      expanded={expanded6}
+                      onPress={handlePress6}>
+                      <View style={styles.inputContainer}>
+                        <Text style={styles.textTitle}>
+                          Land Lord Info
+                        </Text>
+                        <TextInput
+                          value={landlordInfo}
+                          style={styles.input}
+                          // numberOfLines={1}
+                          placeholder={'Land Lord Info'}
+                          placeholderTextColor="#1113"
+                          onChangeText={setlandlordInfo}
+                        />
+
+                      </View>
+                      <View style={styles.inputContainer}>
+                        <Text style={styles.textTitle}>
+                          Comment
+                        </Text>
+                        <TextInput
+                          numberOfLines={5}
+                          value={landlordInfocomment}
+                          style={styles.input}
+                          placeholder={'Land Lord Info Comment'}
+                          placeholderTextColor="#1113"
+                          onChangeText={setlandlordInfocomment}
+                        />
+                      </View>
+                    </List.Accordion>}
+
+
+
+
+
+
+                  {/* Previous Work */}
+                  <List.Accordion
+                    title="Previous Work"
+                    expanded={expanded9}
+                    onPress={handlePress9}>
+                    <View style={styles.inputContainer}>
+                      <Text style={styles.textTitle}>
+                        Previous Work
+                      </Text>
+                      <TextInput
+                        value={values.previousWork}
+                        style={styles.input}
+                        placeholder={'previous Work'}
+                        placeholderTextColor="#1113"
+                        onChangeText={handleChange('previousWork')}
+                      />
+                      {errors.meansOfIdcomment && <Text style={styles.errors}>{errors.meansOfIdcomment}</Text>}
+                    </View>
+                    <View style={styles.inputContainer}>
+                      <Text style={styles.textTitle}>
+                        Comment
+                      </Text>
+                      <TextInput
+                        numberOfLines={5}
+                        value={values.previousWorkcomment}
+                        style={styles.input}
+                        placeholder={'previous Work Comment'}
+                        placeholderTextColor="#1113"
+                        onChangeText={handleChange('previousWorkcomment')}
+                      />
+                      {errors.previousWorkcomment && <Text style={styles.errors}>{errors.previousWorkcomment}</Text>}
+                    </View>
+                  </List.Accordion>
+
+
+
+
+                  {/* fullName */}
+                  {/* <List.Accordion
+          title="Employment Report"
+          expanded={expanded11}
+          onPress={handlePress11}>
+
+          <View style={styles.inputContainer}>
+           <Text style={styles.textTitle}>
+            Employment Report
+           </Text>
+           <TextInput
+            value={values.employmentReport}
+            style={styles.input}
+            numberOfLines={1}
+            placeholder={'Employment Report  '}
+            placeholderTextColor="#1113"
+            onChangeText={setemploymentReport}
+           />
+           {errors.meansOfIdcomment && <Text style={styles.errors}>{errors.meansOfIdcomment}</Text>}
+          </View>
+          <View style={styles.inputContainer}>
+           <Text style={styles.textTitle}>
+            Comment
+           </Text>
+           <TextInput
+            value={employmentReportcomment}
+            style={styles.input}
+            numberOfLines={5}
+            placeholder={'Employment Report comment'}
+            placeholderTextColor="#1113"
+            onChangeText={setemploymentReportcomment}
+           />
+           {errors.meansOfIdcomment && <Text style={styles.errors}>{errors.meansOfIdcomment}</Text>}
+          </View>
+         </List.Accordion> */}
+
+
+                  <List.Accordion
+                    title="Observation"
+                    expanded={expanded12}
+                    onPress={handlePress12}>
+                    <View style={styles.inputContainer}>
+                      <Text style={styles.textTitle}>
+                        Observation
+                      </Text>
+                      <TextInput
+                        value={values.observation}
+                        style={styles.input}
+                        placeholder={'Observation'}
+                        placeholderTextColor="#1113"
+                        onChangeText={handleChange('observation')}
+                      />
+                      {errors.observation && <Text style={styles.errors}>{errors.observation}</Text>}
+                    </View>
+                    <View style={styles.inputContainer}>
+                      <Text style={styles.textTitle}>
+                        Comment
+                      </Text>
+                      <TextInput
+                        numberOfLines={5}
+                        value={values.observationcomment}
+                        style={styles.input}
+                        placeholder={'Observation comment'}
+                        placeholderTextColor="#1113"
+                        onChangeText={handleChange('observationcomment')}
+                      />
+                      {errors.observationcomment && <Text style={styles.errors}>{errors.observationcomment}</Text>}
+                    </View>
+                  </List.Accordion>
+
+                  {/* Visuals */}
+                  <List.Accordion
+                    title="Visuals"
+                    expanded={expanded13}
+                    onPress={handlePress13}>
+
+                    <View style={styles.inputContainer}>
+                      <Text style={styles.textTitle}>
+                        Visuals description'
+                      </Text>
+                      <TextInput
+                        value={values.visuals}
+                        style={styles.input}
+                        placeholder={'Visuals description'}
+                        placeholderTextColor="#1113"
+                        onChangeText={handleChange('visuals')}
+                      />
+                      {errors.visuals && <Text style={styles.errors}>{errors.visuals}</Text>}
+                    </View>
+
+                    <View style={styles.inputContainer}>
+
+                      <Text style={styles.textTitle}>
+                        Visuals Image Url
+                      </Text>
+                      <TextInput
+                        numberOfLines={5}
+                        value={values.visualsimageUrl}
+                        style={styles.input}
+                        placeholder={'Visuals image Url'}
+                        placeholderTextColor="#1113"
+                        onChangeText={handleChange('visualsimageUrl')}
+                      // onChangeText={setobservationcomment}
+                      />
+                      {errors.visualsimageUrl && <Text style={styles.errors}>{errors.visualsimageUrl}</Text>}
+                    </View>
+                    <View style={styles.inputContainer}>
+                      <Text style={styles.textTitle}>
+
+                      </Text>
+                      <ImageUpload setPhoto={setPhoto} setvisualsimageUrl={setvisualsimageUrl} />
+                    </View>
+
+                  </List.Accordion>
+
+
+                </List.Section>
+                <View style={styles.Submit}>
+                  {/* @ts-ignore */}
+                  <TouchableOpacity onPress={handleSubmit} style={photo ? styles.buttonContainer1 : styles.buttonContainer} >
+                    {Loading ? <MaterialIndicator color='white' size={25} style={styles.loadingIcon} /> : <Text style={styles.buttonText}>Submit</Text>}
+
+                  </TouchableOpacity>
+                </View>
+              </View>
+            )}
+          </Formik>
         </KeyboardAwareScrollView>
       </ScrollView >
     </View >
@@ -1255,7 +1122,7 @@ export default ReportStatus;
 
 
 const styles = StyleSheet.create({
-
+  errors: { color: "red" },
   loadingIcon: {
     marginBottom: 0,
     paddingBottom: 0

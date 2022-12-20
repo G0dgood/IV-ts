@@ -16,42 +16,7 @@ const ImageUpload = ({ setPhoto, setvisualsimageUrl }: any) => {
 	const [image, setImage] = useState<any>(null);
 	const [isLoading, setisLoading] = useState<any>(false);
 
-	// image uplaod function
-	const loginHandler = async (result: any) => {
-		setisLoading(true)
-		let url = `${baseUrl}/authexternal/google/storage/public/fileupload`;
-		fetch(url, {
-			method: "POST",
-			body: JSON.stringify({
-				filename: result?.fileName,
-				data: result?.base64,
-			}),
-			headers: {
-				"Content-Type": "application/json",
-				// @ts-ignore
-				Authorization: `Bearer ${user?.idToken}`,
-			}
-		}).catch(err => {
-			setisLoading(false)
-			// console.log('err', err);
-		})
-			// @ts-ignore
-			.then(res => res.json())
-			.then(async parsedRes => {
-				setisLoading(false)
-				console.log('parsedRes', parsedRes);
-				if (parsedRes.error) {
-					alert(parsedRes.message);
-					Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error)
-				} else if (parsedRes.success) {
-					setImage(null)
-					setvisualsimageUrl(parsedRes?.publicUrl)
-				} else {
-					setisLoading(false)
-				}
-			});
-	};
-	setImage
+
 	const pickImage = async () => {
 		// No permissions request is necessary for launching the image library
 		let result = await ImagePicker.launchImageLibraryAsync({
@@ -62,10 +27,40 @@ const ImageUpload = ({ setPhoto, setvisualsimageUrl }: any) => {
 			quality: 1,
 		});
 		if (!result.cancelled) {
-			// @ts-ignore
 			setImage(result.uri);
-			// @ts-ignore
-			loginHandler(result)
+			setisLoading(true)
+			let url = `${baseUrl}/authexternal/google/storage/public/fileupload`;
+			fetch(url, {
+				method: "POST",
+				body: JSON.stringify({
+					filename: 'image.jpeg',
+					data: result?.base64
+				}),
+				headers: {
+					"Content-Type": "application/json",
+					// @ts-ignore
+					Authorization: `Bearer ${user?.idToken}`,
+				}
+			}).catch(err => {
+				setisLoading(false)
+				// console.log('err', err);
+			})
+				// @ts-ignore
+				.then(res => res.json())
+				.then(async parsedRes => {
+					setisLoading(false)
+					console.log('parsedRes', parsedRes);
+					if (parsedRes.error) {
+						alert(parsedRes.message);
+						Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error)
+					} else if (parsedRes.success) {
+						setImage(null)
+						setvisualsimageUrl(parsedRes?.publicUrl)
+					} else {
+						setisLoading(false)
+					}
+				});
+
 		};
 	}
 	useEffect(() => {
