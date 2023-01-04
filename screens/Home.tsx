@@ -36,6 +36,7 @@ const Home = () => {
 
   const [refreshing, setRefreshing] = React.useState(false);
 
+  const dispatch = useAppDispatch();
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
     wait(2000).then(() => setRefreshing(false));
@@ -51,12 +52,11 @@ const Home = () => {
     try {
       const info = await AsyncStorage.getItem("user");
       // @ts-ignore
-      dispatch(setUserInfo(JSON.parse(info)));
+      dispatch(setUserInfo(info));
     } catch (e) {
       console.log(`isLoggedIn in error ${e}`);
     }
   };
-  const dispatch = useAppDispatch();
 
   const navigation = useNavigation();
   const [datas, setdatas] = useState([]);
