@@ -2,7 +2,7 @@
   "expo": {
     "name": "iverify",
     "slug": "iverify",
-    "version": "1.2.2",
+    "version": "1.2.4",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
@@ -13,15 +13,15 @@
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.outcess.iverify"
+      "bundleIdentifier": "com.tech.iverify"
     },
     "android": {
-      "versionCode": 11,
+      "versionCode": 13,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#007AFF"
       },
-      "package": "com.outcess.iverify"
+      "package": "com.tech.iverify"
     },
     "web": {
       "favicon": "./assets/images/favicon.png"
