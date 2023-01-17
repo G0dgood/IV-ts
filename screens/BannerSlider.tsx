@@ -21,7 +21,6 @@ const Banner = ({ loading, count, completed, ongoing, canclled, rejected, pendin
 export default Banner
 const styles = StyleSheet.create({
     container: {
-        // backgroundColor: '#fff',
         alignItems: 'center',
         justifyContent: 'center',
 

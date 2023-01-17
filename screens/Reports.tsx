@@ -11,7 +11,6 @@ import {
 import { Text, View, } from '../components/Themed';
 import { Dimensions } from "react-native";
 import ButtonToggleGroup from "react-native-button-toggle-group";
-// import { logoutUser } from "../features/authSlice";
 import Modal from "react-native-modal";
 export const SLIDER_WIDTH = Dimensions.get("window").width - 80;
 export const WIDTH = Dimensions.get("window").width - 40;

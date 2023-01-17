@@ -29,18 +29,7 @@ const Schedule = ({ navigation }: any) => {
 
 
 
-  const [isModalVisible, setModalVisible] = useState(false);
 
-  // const toggleModal = () => {
-  //   setModalVisible(!isModalVisible);
-  // };
-  // const toggleModalClose = () => {
-  //   setModalVisible(isModalVisible);
-  // };
-  const handlesDetailsPage = () => {
-    navigation.navigate("DetailsPage")
-  }
-  // , { id }
   // @ts-ignore
   const datas = data?.data?.filter((obj) => {
     return obj?.status !== "COMPLETED";

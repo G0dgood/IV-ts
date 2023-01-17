@@ -17,16 +17,18 @@ const initialState = {
  
 
 // Login user
-export const login = createAsyncThunk('auth/login', async (  thunkAPI) => {
+export const login = createAsyncThunk('auth/login', async ( thunkAPI) => {
   try {
     return await authService.login( )
   } catch (error:any) {
     const message =
-      (error.response && 
-        error.response.data && 
+      (error.response || 
+        error.response.data ||
         error.response.data.message) ||
       error.message ||
       error.toString() 
+        // @ts-ignore
+     return thunkAPI.rejectWithValue(message)
   }
 })
 

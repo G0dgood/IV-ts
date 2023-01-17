@@ -17,15 +17,12 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { login } from "../features/authSlice";
 import { useAppDispatch } from "../hooks/useStore";
 import { MaterialIndicator } from "react-native-indicators";
-import { Formik } from 'formik';
-import * as yup from 'yup'
 import { googleKey, googleUrl } from "../shared/baseUrl";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setisLoading] = useState(false);
-  const [success, setsuccess] = useState(false);
 
   const dispatch = useAppDispatch();
   const navigation = useNavigation();
@@ -55,8 +52,6 @@ const Login = () => {
       .then(res => res.json())
       .then(async parsedRes => {
         setisLoading(false)
-        setsuccess(true)
-        // console.log('parsedRes', parsedRes);
         if (parsedRes.idToken) {
           await AsyncStorage.setItem('user', JSON.stringify(parsedRes));
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)
@@ -124,7 +119,6 @@ const Login = () => {
 
           <View>
             <TextInput
-              // onPress={() => togglePasswordVisiblity()}
               secureTextEntry={passwordShown}
               placeholder="Password"
               placeholderTextColor="#20549D"

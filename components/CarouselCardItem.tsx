@@ -62,7 +62,6 @@ const styles = StyleSheet.create({
         fontFamily: 'Poppins_400Regular'
     },
     body: {
-        // color: "#222",
         fontSize: 40,
         fontWeight: "bold",
         textAlign: 'center',

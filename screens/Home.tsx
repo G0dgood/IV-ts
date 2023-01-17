@@ -32,7 +32,10 @@ const Home = () => {
     isSuccess: success,
     isLoading,
     message,
+    error
   } = useAppSelector((state) => state.verify);
+
+  // console.log('message', message, 'datav', datav)
 
   const [refreshing, setRefreshing] = React.useState(false);
 
@@ -88,11 +91,11 @@ const Home = () => {
   //     setTimeout(() => {
   //       dispatch(
   //         logoutUser(),
+  //         // @ts-ignore  
   //         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)
   //       );
   //     }, 1000);
   //     dispatch(reset());
-  //     console.log("worked...2222");
   //   }
   // }, [dispatch, message, navigation]);
 
@@ -118,7 +121,7 @@ const Home = () => {
     getHour();
   }, [isSuccess]);
 
-  // console.log("user", user);
+
 
   // // @ts-ignore
   const COMPLETED = data?.filter((obj: { status: string; }) => {
@@ -144,7 +147,7 @@ const Home = () => {
   const Schedule = data?.filter((obj: { status: string; }) => {
     return obj?.status !== "COMPLETED";
   });
-  // console.log("pending", pending?.length);
+
   const getHour = () => {
     const date = new Date();
     const hour = date.getHours();
@@ -180,21 +183,7 @@ const Home = () => {
         <Badge value={!Schedule ? 0 : Schedule?.length} status="warning" />
       </TouchableOpacity>
       <View style={styles.verifications}>
-        {/* <Text style={styles.schedule1}>Latest verifications</Text>
-        <View style={styles.keyboardarrow}>
-          <Text
-            style={styles.Viewall}
-            onPress={() => navigation.navigate("Reports")}>
-            View all
-          </Text>
-          <Text>
-            <MaterialIcons
-              style={styles.arrowright}
-              name="keyboard-arrow-right"
-              size={22}
-            />
-          </Text>
-        </View> */}
+
       </View>
       {/* Address Section */}
       <ScrollView
@@ -206,7 +195,7 @@ const Home = () => {
           <Skeleton />
         ) : (
           <View>
-            {datav === null ? (
+            {!datav ? (
               <View style={styles.mainEmoji}>
                 <Ionicons
                   name="ios-folder-open-outline"

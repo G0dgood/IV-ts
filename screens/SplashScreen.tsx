@@ -57,9 +57,3 @@ const styles = StyleSheet.create({
 
 });
 
-
-// "splash": {
-//  "image": "./assets/images/splash.png",
-//   "resizeMode": "contain",
-//    "backgroundColor": "#007AFF"
-// },

@@ -25,7 +25,7 @@ const allassignedrequest = async (user: { idToken: any; }) => {
          },
   };  
   const { data } = await axios.get(baseUrl+`/admin/requests?page=1&limit=40`, config)  
- 
+//  console.log('data',data)
   
   return data
 }

@@ -7,7 +7,6 @@ import { useAppDispatch, useAppSelector } from '../hooks/useStore'
 import { ProgressBar } from 'react-native-paper'
 import * as Haptics from "expo-haptics";
 import { baseUrl } from '../shared/baseUrl'
-// import { Image } from '@rneui/themed';
 import { Ionicons } from '@expo/vector-icons'
 import { BarIndicator } from 'react-native-indicators'
 import { logoutUser, reset } from '../features/authSlice'
@@ -64,7 +63,7 @@ const DetailsPage = ({ navigation }: any) => {
 	}, [user?.idToken,]);
 
 
-	// console.log('Details', data)
+
 
 	useEffect(() => {
 		if (messages === "401") {
@@ -246,12 +245,7 @@ const DetailsPage = ({ navigation }: any) => {
 						/>
 					</View>
 
-					{/* <View style={styles.modalTextupImage} lightColor="#eee" darkColor="rgba(255,255,255,0.1)">
-						<Text>
-							<Entypo name="user" size={170} />
 
-						</Text>
-					</View> */}
 				</View>
 			</View>
 		);

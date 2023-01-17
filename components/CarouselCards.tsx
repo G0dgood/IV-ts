@@ -12,12 +12,7 @@ const CarouselCards = ({ loading, count, completed, ongoing, canclled, rejected,
 
   const data = [
 
-    // {
-    //     title: 'Amount Earned',
-    //     body: '105,000',
-    //     naira: '₦',
-    //     cent: '.00'
-    // },
+
     {
       title: 'Total Verifications',
       body: !count ? '0' : count,

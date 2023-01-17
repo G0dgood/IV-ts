@@ -42,6 +42,7 @@ const ReportStatus = ({ navigation }: any) => {
   if (errorMsg) {
     text = errorMsg;
   } else if (location) {
+    // @ts-ignore
     text = JSON.stringify(location);
     a = (JSON.parse(text))
   }
@@ -50,6 +51,7 @@ const ReportStatus = ({ navigation }: any) => {
     if (errorMsg) {
       text = errorMsg;
     } else if (location) {
+      // @ts-ignore
       text = JSON.stringify(location);
       a = (JSON.parse(text))
     }
@@ -137,7 +139,6 @@ const ReportStatus = ({ navigation }: any) => {
       const location: any = await Location.getCurrentPositionAsync({});
       const address: any = await Location.reverseGeocodeAsync(location.coords)
       setLocation(location);
-      // console.log('latitude', location?.coords?.latitude, 'longitude', location?.coords?.longitude)
       setlongitude(location?.coords?.longitude)
       setlatitude(location?.coords?.latitude)
       setAddresscoords({
@@ -438,11 +439,9 @@ const ReportStatus = ({ navigation }: any) => {
       .then((res: { data: any; }) => {
         navigation.replace('SuccessConfirmed', { name })
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)
-        // console.log("Success", res.data);
         setLoading(false);
       })
       .catch((err: { message: any; }) => {
-        // console.log('err', err);
         setMessage(err?.message);
         setLoading(false);
         setisError(true);
@@ -604,25 +603,7 @@ const ReportStatus = ({ navigation }: any) => {
             {({ values, errors, touched, handleChange, setFieldTouched, isValid, handleSubmit }): any => (
               <View>
                 <List.Section >
-                  {/* <List.Accordion
-                    title="GPS Location"
-                    expanded={expanded14}
-                    onPress={handlePress14}
-                  >
-                    <View style={styles.inputContainer}>
-                      <Text style={styles.textTitle}>
-                        GPS Location
-                      </Text>
-                      <TextInput
-                        defaultValue={gpslocation === undefined ? "Loading Location..." : gpslocation}
-                        style={styles.input}
-                        placeholder={'GPS Location'}
-                        placeholderTextColor="#1113"
 
-                      />
-                    </View>
-
-                  </List.Accordion> */}
                   {/* client  */}
                   <List.Accordion
                     title="Client"
@@ -799,40 +780,6 @@ const ReportStatus = ({ navigation }: any) => {
                   </List.Accordion>
 
 
-                  {/* <List.Accordion
-          title="Company Address"
-          expanded={expanded17}
-          onPress={handlePress17}
-         >
-          <View style={styles.inputContainer}>
-           <Text style={styles.textTitle}>
-            Company Address
-           </Text>
-           <TextInput
-            value={companyAddress}
-            style={styles.input}
-            placeholder={'Company Address'}
-            placeholderTextColor="#1113"
-            onChangeText={setcompanyAddress}
-           />
-           {errors.companyAddress && <Text style={styles.errors}>{errors.companyAddress}</Text>}
-          </View>
-          <View style={styles.inputContainer}>
-           <Text style={styles.textTitle}>
-            Comment
-           </Text>
-           <TextInput
-            numberOfLines={5}
-            value={companyAddresscomment}
-            style={styles.input}
-            placeholder={'Company Address Commnet'}
-            placeholderTextColor="#1113"
-            onChangeText={setcompanyAddresscomment}
-           />
-          </View>
-
-         </List.Accordion> */}
-
                   {/* Phone Number */}
                   <List.Accordion
                     title="Phone Number"
@@ -979,46 +926,6 @@ const ReportStatus = ({ navigation }: any) => {
                     </View>
                   </List.Accordion>
 
-
-
-
-                  {/* fullName */}
-                  {/* <List.Accordion
-          title="Employment Report"
-          expanded={expanded11}
-          onPress={handlePress11}>
-
-          <View style={styles.inputContainer}>
-           <Text style={styles.textTitle}>
-            Employment Report
-           </Text>
-           <TextInput
-            value={values.employmentReport}
-            style={styles.input}
-            numberOfLines={1}
-            placeholder={'Employment Report  '}
-            placeholderTextColor="#1113"
-            onChangeText={setemploymentReport}
-           />
-           {errors.meansOfIdcomment && <Text style={styles.errors}>{errors.meansOfIdcomment}</Text>}
-          </View>
-          <View style={styles.inputContainer}>
-           <Text style={styles.textTitle}>
-            Comment
-           </Text>
-           <TextInput
-            value={employmentReportcomment}
-            style={styles.input}
-            numberOfLines={5}
-            placeholder={'Employment Report comment'}
-            placeholderTextColor="#1113"
-            onChangeText={setemploymentReportcomment}
-           />
-           {errors.meansOfIdcomment && <Text style={styles.errors}>{errors.meansOfIdcomment}</Text>}
-          </View>
-         </List.Accordion> */}
-
-
                   <List.Accordion
                     title="Observation"
                     expanded={expanded12}
@@ -1146,11 +1053,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#FBFBFB",
     borderRadius: 5,
   },
-  // KYCClientInputText: {
-  //   fontSize: 12,
-  //   fontWeight: "200",
-  //   fontFamily: "Poppins_600SemiBold",
-  // },
 
   signupinputmain: {
     marginBottom: 20,
@@ -1206,12 +1108,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
   },
 
-  signupcontainer: {
 
-    // flexDirection: "column",
-    // justifyContent: "center",
-    // marginTop: Platform.OS === "ios" ? 70 : 50,
-  },
   loading: {
     justifyContent: "center",
     alignItems: "center",
@@ -1290,7 +1187,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   container: {
-    // backgroundColor: '#f9fafd',
     flex: 1,
 
   },
@@ -1299,7 +1195,6 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins_400Regular',
     fontSize: 28,
     marginBottom: 10,
-    // color: '#051d5f',
   },
   navButton: {
     marginTop: 15,
