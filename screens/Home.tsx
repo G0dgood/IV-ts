@@ -7,7 +7,6 @@ import {
   RefreshControl,
   Platform,
 } from "react-native";
-import moment from "moment";
 import { Text, View } from "../components/Themed";
 import { useNavigation } from "@react-navigation/native";
 import { Badge } from "react-native-elements";
@@ -18,7 +17,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { allassignedrequest, reset } from "../features/verifySlice";
 import * as Haptics from "expo-haptics";
 import Skeleton from "../components/LoaderSkeleton";
-import { logoutUser } from "../features/authSlice";
 import { setUserInfo } from "../features/authSlice";
 import { Card } from "../components/TaskCard";
 

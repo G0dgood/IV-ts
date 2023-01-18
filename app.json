@@ -2,7 +2,7 @@
   "expo": {
     "name": "iverify",
     "slug": "iverify",
-    "version": "1.2.5",
+    "version": "1.3.1",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
@@ -10,15 +10,13 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.tech.iverify"
     },
     "android": {
-      "versionCode": 14,
+      "versionCode": 18,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#007AFF"

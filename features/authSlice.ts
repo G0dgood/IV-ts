@@ -51,11 +51,13 @@ export const authSlice = createSlice({
     setUserInfo: (state, action) => {
       state.user = action.payload
     },
+
     logoutUser: state => {
       AsyncStorage.removeItem('user')
       state.user = null
     }
   },
+  
   extraReducers: (builder) => {
     builder
       .addCase(login.pending, (state) => {
